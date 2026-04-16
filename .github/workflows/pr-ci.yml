@@ -1,0 +1,49 @@
+name: Pull Request CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '.gitattributes'
+      - '.gitignore'
+      - 'CODE_OF_CONDUCT.md'
+      - 'CONTRIBUTING.md'
+      - 'LICENSE'
+      - 'MANIFEST.in'
+      - 'README.md'
+      - 'mkdocs.yml'
+      - 'readthedocs.yml'
+      - 'docs/**'
+      - '.github/CODEOWNERS'
+  workflow_dispatch:
+
+
+jobs:
+  call-lint-workflow:
+    name: Lint
+    uses: ./.github/workflows/lint.yml
+  
+  call-typecheck-workflow:
+    name: Typecheck
+    needs: call-lint-workflow
+    uses: ./.github/workflows/typecheck.yml
+    
+  call-test-workflow:
+    name: Test
+    needs: call-typecheck-workflow
+    uses: ./.github/workflows/test.yml
+  
+  # Flag to use in status checks
+  ok-flag:
+    name: OK Flag
+    needs: [call-lint-workflow, call-typecheck-workflow, call-test-workflow]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if any job failed
+        if: |
+          needs.call-lint-workflow.result == 'failure' ||
+          needs.call-typecheck-workflow.result == 'failure' ||
+          needs.call-test-workflow.result == 'failure'
+        run: exit 1

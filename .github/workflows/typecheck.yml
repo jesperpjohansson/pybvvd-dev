@@ -1,0 +1,37 @@
+name: Typecheck
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'pyproject.toml'
+      - 'pybvvd/**'
+      - 'scripts/**'
+      - 'requirements/typecheck.txt'
+      - '.github/workflows/typecheck.yml'
+      - '.github/actions/set-up-python-env/action.yml'
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  typecheck:
+    name: Typecheck | ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.12', '3.13'] # Oldest and latest supported versions
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set Up Python Environment
+        uses: ./.github/actions/set-up-python-env
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements/typecheck.txt 
+
+      - name: Run scripts.typecheck
+        run: python -m scripts.typecheck

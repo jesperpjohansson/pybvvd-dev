@@ -1,0 +1,9 @@
+# Packages required to run `scripts/format.py` and `scripts/lint.py`
+#
+# Notes:
+# - `# import: name` specifies the import name of a dependency. It is a directive
+#   comment used to verify that all dependencies have been installed.
+#   See `scripts/_utils.py`.
+
+# TOOL
+ruff # import: ruff

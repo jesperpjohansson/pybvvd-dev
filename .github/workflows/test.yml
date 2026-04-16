@@ -1,0 +1,63 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'pyproject.toml'
+      - 'pybvvd/**'
+      - 'tests/**'
+      - 'requirements/test.txt'
+      - 'requirements/covreport.txt'
+      - '.github/workflows/test.yml'
+      - '.github/actions/set-up-python-env/action.yml'
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  test-py-version-compat:
+    name: Test Python version compatibility | ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.12', '3.13']
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set Up Python Environment
+        uses: ./.github/actions/set-up-python-env
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install required dependencies
+        run: |
+          python -m pip install -e .
+          python -m pip install -r requirements/test.txt
+
+      - name: Run scripts.test
+        run: python -m scripts.test
+
+  test-os-compat:
+    name: Test OS compatibility | ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      
+      - name: Set Up Python Environment
+        uses: ./.github/actions/set-up-python-env
+
+      - name: Install required dependencies
+        run: |
+          python -m pip install -e .
+          python -m pip install -r requirements/test.txt
+
+      - name: Run scripts.test
+        run: python -m scripts.test

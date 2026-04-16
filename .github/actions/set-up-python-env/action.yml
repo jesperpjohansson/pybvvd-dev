@@ -1,0 +1,24 @@
+name: Set Up Python Environment
+description: Checkout code, set up Python, and (optionally) upgrade pip
+
+inputs:
+  python-version:
+    description: Version of Python to install
+    default: '3.12'
+  upgrade-pip:
+    description: Whether or not to skip upgrading pip
+    default: 'true'
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: pip
+
+    - name: Upgrade pip
+      if: ${{ inputs.upgrade-pip == 'true' }}
+      run: python -m pip install --upgrade pip
+      shell: bash

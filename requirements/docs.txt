@@ -1,0 +1,11 @@
+# Packages required to run `.github/workflows/---.py`
+#
+# Notes:
+# - `# import: name` specifies the import name of a dependency. It is a directive
+#   comment used to verify that all dependencies have been installed.
+#   See `scripts/_utils.py`.
+
+# PLUGINS
+mkdocs # import: pytest_cov
+mkdocs-material # import: mkdocs_material
+mkdocstrings[python] # import: mkdocstrings

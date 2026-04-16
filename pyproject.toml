@@ -1,0 +1,129 @@
+[build-system]
+requires = ["hatchling >= 1.27", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pybvvd"
+dynamic = ["version"]
+description = "SDK for Bolagsverket's Värdefulla Datamängder API."
+readme = "README.md"
+requires-python = ">=3.12,<3.14"
+license = "BSD-3-Clause"
+authors = [{ name="Jesper Johansson", email="jesperpjohansson@gmail.com" }]
+dependencies = ["httpx", "pydantic"]
+
+[project.optional-dependencies]
+dev = [
+  "ruff",
+  "mypy",
+  "pytest",
+  "pytest-asyncio",
+  "pytest-cov",
+]
+
+# ≡≡≡ hatch ≡≡≡
+
+[tool.hatch.version]
+source = "vcs"
+
+# ≡≡≡ ruff ≡≡≡
+
+[tool.ruff]
+target-version = "py312"
+output-format = "pylint"
+include = [
+  "pyproject.toml",
+  "pybvvd/**/*.py",
+  "tests/**/*.py",
+  "scripts/**/*.py",
+  "patch_swagger.py"
+]
+exclude = ["pybvvd/api/_generated.py"]
+
+[tool.ruff.lint]
+
+select = ["ALL"]
+
+ignore = [
+  "ANN003",  # missing-type-kwargs
+  "COM812",  # missing-trailing-comma
+  "D105"     # undocumented-magic-method
+]
+
+[tool.ruff.lint.per-file-ignores]
+
+"tests/**" = [
+  "ANN",     # flake8-annotations
+  "D",       # pydocstyle
+  "ARG001",  # unused-function-argument
+  "BLE001",  # blind-except
+  "C901",    # complex-structure
+  "PLR2004", # magic-value-comparison
+  "S101",    # assert
+  "S106",    # hardcoded-password-func-arg
+  "S107",    # hardcoded-password-default
+  "SLF001",  # private-member-access
+  "TRY002",  # raise-vanilla-class
+]
+
+"scripts/*" = [
+  "D101",    # undocumented-public-class
+  "D102",    # undocumented-public-method
+  "D103",    # undocumented-public-function
+  "D105",    # undocumented-magic-method
+  "D106",    # undocumented-public-nested-class
+  "D107",    # undocumented-public-init
+  "S603",    # subprocess-without-shell-equals-true
+  "S607",    # start-process-with-partial-path
+]
+
+"scripts/_utils.py" = [
+  "T201",    # print
+]
+
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+force-sort-within-sections = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+# ≡≡≡ mypy ≡≡≡
+
+[tool.mypy]
+python_version = "3.12"
+files = ["pybvvd/**/*.py", "scripts/**/*.py", "patch_swagger.py"]
+warn_unused_configs = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+no_implicit_reexport = true
+strict_equality = true
+extra_checks = true
+
+# ≡≡≡ pytest ≡≡≡
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+  
+[tool.coverage.report]
+exclude_also = ["if TYPE_CHECKING:"]
+
+# ≡≡≡ datamodel-codegen ≡≡≡
+
+[tool.datamodel-codegen]
+input-file-type = "openapi"
+output = "pybvvd/api/_generated.py"
+schema-version = "3.0"
+schema-version-mode = "strict"
+target-python-version = "3.12"
+field-constraints = true
+use-schema-description = true
+extra-fields = "forbid"
+aliases = "datamodel-codegen-config/aliases.json"
+formatters = []
