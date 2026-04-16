@@ -75,12 +75,8 @@ ignore = [
   "D107",    # undocumented-public-init
   "S603",    # subprocess-without-shell-equals-true
   "S607",    # start-process-with-partial-path
-]
-
-"scripts/_utils.py" = [
   "T201",    # print
 ]
-
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
