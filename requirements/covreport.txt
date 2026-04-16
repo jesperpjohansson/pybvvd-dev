@@ -7,5 +7,7 @@
 # - This file excludes `pybvvd` because it is installed
 #   separately from multiple sources in CI (editable/.whl/.tar.gz).
 
+-r test.txt
+
 # PLUGINS
 pytest-cov # import: pytest_cov
