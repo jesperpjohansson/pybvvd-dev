@@ -46,14 +46,19 @@ check_dependencies_installed("covreport")
 
 _print(f"running tests and saving {args.type} report")
 
-code = subprocess.run(
+result = subprocess.run(
     ["pytest", "--cov=pybvvd", f"--cov-report={args.type}"],
     check=False,
     capture_output=True,
-).returncode
+    text=True,
+)
 
-if code > 0:
-    sys.exit(code)
+if result.returncode > 0:
+    if result.stdout:
+        print(result.stdout, file=sys.stdout, end="")
+    if result.stderr:
+        print(result.stderr, file=sys.stderr, end="")
+    sys.exit(result.returncode)
 
 path = Path(__file__).parents[1] / REPORT_TYPE_TO_PATH[args.type]
 
