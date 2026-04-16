@@ -25,7 +25,6 @@ nav:
   - Home: index.md
   - Usage: usage.md
   - API Reference: api-reference.md
-  - Page Reference: page-reference.md
 
 plugins:
   - search
