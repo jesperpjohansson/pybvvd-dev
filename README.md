@@ -9,7 +9,7 @@
 [![Coverage](https://coveralls.io/repos/github/jesperpjohansson/pybvvd-dev/badge.svg?branch=main)](https://coveralls.io/github/jesperpjohansson/pybvvd-dev?branch=main)
 
 
-Clients for interacting with Bolagsverket's Värdefulla Datamängder API.
+Python SDK for Bolagsverket's *Värdefulla Datamängder* API.
 
 > [!IMPORTANT]
 > `pybvvd` is an independent project and **is not affiliated with, endorsed by, or

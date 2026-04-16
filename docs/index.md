@@ -3,7 +3,7 @@
 ![Python](https://img.shields.io/badge/Python-3.12%20%7C%203.13-blue.svg)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://github.com/jesperpjohansson/pybvvd-dev/blob/main/LICENSE)
 
-Clients for interacting with Bolagsverket's Värdefulla Datamängder API.
+Python SDK for Bolagsverket's *Värdefulla Datamängder* API.
 
 !!! note
     The API is functional, documented, and tested. However, `pybvvd` is still in the **late stages of development**; hence:
