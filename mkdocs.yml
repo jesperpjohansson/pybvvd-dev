@@ -40,12 +40,13 @@ plugins:
             # GENERAL OPTIONS
 
             show_source: false
-            show_bases: true
+            show_bases: false
 
             # DOCSTRING OPTIONS
 
             docstring_style: numpy
-            docstring_section_style: list
+            docstring_section_style: table
+            merge_init_into_class: true
 
             # HEADINGS OPTIONS
 
@@ -57,7 +58,9 @@ plugins:
             # SIGNATURES OPTIONS
             annotations_path: source
             line_length: 88
-            show_signature: false
+            show_signature: true
+            show_signature_annotations: true
+            
 
 markdown_extensions:
   - admonition
