@@ -63,7 +63,7 @@ class TokenManagerBase[ClientT]:
         self._base_url = BASE_URL_TEST if test_environment else BASE_URL_PRODUCTION
         self._test_environment = test_environment
         self._expiry_threshold = expiry_threshold
-        self._single_token = single_token
+        self.single_token = single_token
         self._issued_tokens: list[tuple[float, oauth2.AccessTokenResponse]] = []
 
     @property
@@ -190,8 +190,8 @@ class TokenManager(TokenManagerBase[httpx.Client]):
         If ``True``, use the test OAuth 2.0 portal endpoints instead of the
         production endpoints.
     single_token: bool, optional
-        If ``True``, an existing token will automatically be revoked before
-        a new ones is issued.
+        If ``True``, existing tokens will automatically be revoked when
+        a new one is issued.
     expiry_threshold : float, optional
         Number of seconds before actual expiration when an access token
         should be treated as expired.
@@ -379,8 +379,8 @@ class TokenManager(TokenManagerBase[httpx.Client]):
             If the token response cannot be parsed into an access token model.
         """
         with self._lock:
-            if self._single_token and self._issued_tokens:
-                self._revoke_access_token_unlocked(clear=False)
+            if self.single_token and self._issued_tokens:
+                self._revoke_access_token_unlocked(clear=True)
             self._issue_access_token_unlocked(scope=scope)
 
     def revoke_access_token(self, *, clear: bool = False) -> None:
@@ -430,8 +430,8 @@ class AsyncTokenManager(TokenManagerBase[httpx.AsyncClient]):
         If ``True``, use the test OAuth 2.0 portal endpoints instead of the
         production endpoints.
     single_token: bool, optional
-        If ``True``, an existing token will automatically be revoked before
-        a new ones is issued.
+        If ``True``, existing tokens will automatically be revoked when
+        a new one is issued.
     expiry_threshold : float, optional
         Number of seconds before actual expiration when an access token
         should be treated as expired.
@@ -625,8 +625,8 @@ class AsyncTokenManager(TokenManagerBase[httpx.AsyncClient]):
 
         """
         async with self._lock:
-            if self._single_token and self._issued_tokens:
-                await self._revoke_access_token_unlocked(clear=False)
+            if self.single_token and self._issued_tokens:
+                await self._revoke_access_token_unlocked(clear=True)
             await self._issue_access_token_unlocked(scope=scope)
 
     async def revoke_access_token(self, *, clear: bool = False) -> None:
