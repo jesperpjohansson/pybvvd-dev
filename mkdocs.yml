@@ -34,6 +34,7 @@ plugins:
         python:
           options:
             docstring_style: numpy
+            annotations_path: source
             show_root_heading: true
             show_source: false
             show_signature_annotations: false
