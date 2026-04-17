@@ -1,7 +1,16 @@
-::: pybvvd.TokenManager
+# API Reference
+
+## Clients
 ::: pybvvd.Client
-::: pybvvd.AsyncTokenManager
 ::: pybvvd.AsyncClient
-::: pybvvd.oauth2
+
+## Token Managers
+::: pybvvd.TokenManager
+::: pybvvd.AsyncTokenManager
+
+## Data models
 ::: pybvvd.api
+::: pybvvd.oauth2
+
+## Exceptions
 ::: pybvvd.exceptions
