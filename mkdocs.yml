@@ -32,12 +32,32 @@ plugins:
       default_handler: python
       handlers:
         python:
+
+          paths: [pybvvd]
+
           options:
-            docstring_style: numpy
-            annotations_path: source
-            show_root_heading: true
+
+            # GENERAL OPTIONS
+
             show_source: false
-            show_signature_annotations: false
+            show_bases: true
+
+            # DOCSTRING OPTIONS
+
+            docstring_style: numpy
+            docstring_section_style: list
+
+            # HEADINGS OPTIONS
+
+            show_root_heading: true
+            show_root_full_path: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+
+            # SIGNATURES OPTIONS
+            annotations_path: source
+            line_length: 88
+            show_signature: false
 
 markdown_extensions:
   - admonition
