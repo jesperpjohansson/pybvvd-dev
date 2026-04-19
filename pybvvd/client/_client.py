@@ -13,8 +13,9 @@ from typing import Literal
 import httpx
 import pydantic
 
-from pybvvd import api
+from pybvvd import api, oauth2
 from pybvvd.client._token_manager import (
+    DEFAULT_SCOPE,
     AsyncTokenManager,
     TokenManager,
     TokenManagerBase,
@@ -50,6 +51,11 @@ class ClientBase[ClientT, TokenManagerT: TokenManagerBase]:
         self._base_url = (
             BASE_URL_TEST if token_manager.test_environment else BASE_URL_PRODUCTION
         )
+
+    @property
+    def token_manager(self) -> TokenManagerT:
+        """Return the token manager used by this client."""
+        return self._token_manager
 
     def _raise_on_http_error(self, response: httpx.Response) -> None:
         try:
@@ -98,6 +104,60 @@ class Client(ClientBase[httpx.Client, TokenManager]):
     token_manager : TokenManager
         Synchronous OAuth2 token manager.
     """
+
+    @classmethod
+    def from_credentials(  # noqa: PLR0913
+        cls,
+        session: httpx.Client,
+        client_credentials: oauth2.ClientCredentials,
+        *,
+        test_environment: bool = False,
+        single_token: bool = False,
+        expiry_threshold: float = 0.0,
+        issue_token: bool = True,
+        scope: str = DEFAULT_SCOPE,
+    ) -> Client:
+        """
+        Create a synchronous client from OAuth2 client credentials.
+
+        This convenience constructor creates a ``TokenManager`` and injects it
+        into the returned client.
+
+        Parameters
+        ----------
+        session : httpx.Client
+            Synchronous HTTP client instance used for token and API requests.
+        client_credentials : oauth2.ClientCredentials
+            OAuth 2.0 client credentials mapping containing ``client_id`` and
+            ``client_secret``.
+        test_environment : bool, optional
+            If ``True``, use the test OAuth 2.0 portal and API endpoints.
+        single_token : bool, optional
+            If ``True``, existing tokens will automatically be revoked when
+            a new one is issued.
+        expiry_threshold : float, optional
+            Number of seconds before actual expiration when an access token
+            should be treated as expired.
+        issue_token : bool, optional
+            If ``True``, issue an access token before returning the client.
+        scope : str, optional
+            Scope of the access token issued when ``issue_token`` is ``True``.
+
+        Returns
+        -------
+        Client
+            Configured synchronous API client.
+        """
+        token_manager = TokenManager(
+            session,
+            client_credentials,
+            test_environment=test_environment,
+            single_token=single_token,
+            expiry_threshold=expiry_threshold,
+        )
+        if issue_token:
+            token_manager.issue_access_token(scope=scope)
+        return cls(session, token_manager)
 
     def ping(self) -> tuple[str, int]:
         """
@@ -278,6 +338,60 @@ class AsyncClient(ClientBase[httpx.AsyncClient, AsyncTokenManager]):
     token_manager : AsyncTokenManager
         Asynchronous OAuth2 token manager.
     """
+
+    @classmethod
+    async def from_credentials(  # noqa: PLR0913
+        cls,
+        session: httpx.AsyncClient,
+        client_credentials: oauth2.ClientCredentials,
+        *,
+        test_environment: bool = False,
+        single_token: bool = False,
+        expiry_threshold: float = 0.0,
+        issue_token: bool = True,
+        scope: str = DEFAULT_SCOPE,
+    ) -> AsyncClient:
+        """
+        Create an asynchronous client from OAuth2 client credentials.
+
+        This convenience constructor creates an ``AsyncTokenManager`` and
+        injects it into the returned client.
+
+        Parameters
+        ----------
+        session : httpx.AsyncClient
+            Asynchronous HTTP client instance used for token and API requests.
+        client_credentials : oauth2.ClientCredentials
+            OAuth 2.0 client credentials mapping containing ``client_id`` and
+            ``client_secret``.
+        test_environment : bool, optional
+            If ``True``, use the test OAuth 2.0 portal and API endpoints.
+        single_token : bool, optional
+            If ``True``, existing tokens will automatically be revoked when
+            a new one is issued.
+        expiry_threshold : float, optional
+            Number of seconds before actual expiration when an access token
+            should be treated as expired.
+        issue_token : bool, optional
+            If ``True``, issue an access token before returning the client.
+        scope : str, optional
+            Scope of the access token issued when ``issue_token`` is ``True``.
+
+        Returns
+        -------
+        AsyncClient
+            Configured asynchronous API client.
+        """
+        token_manager = AsyncTokenManager(
+            session,
+            client_credentials,
+            test_environment=test_environment,
+            single_token=single_token,
+            expiry_threshold=expiry_threshold,
+        )
+        if issue_token:
+            await token_manager.issue_access_token(scope=scope)
+        return cls(session, token_manager)
 
     async def ping(self) -> tuple[str, int]:
         """

@@ -14,7 +14,13 @@ from pybvvd.client._client import (
     AsyncClient,
     Client,
 )
+from pybvvd.client._token_manager import PATH_TOKEN
 from pybvvd.exceptions import APIError
+
+CLIENT_CREDENTIALS = {
+    "client_id": "test-client-id",
+    "client_secret": "test-client-secret",
+}
 
 
 class DummyTokenManager:
@@ -106,6 +112,15 @@ def make_dokumentlista_payload() -> dict[str, object]:
     }
 
 
+def make_token_response(*, access_token: str = "issued-token") -> dict[str, object]:
+    return {
+        "access_token": access_token,
+        "token_type": "Bearer",
+        "expires_in": 3600,
+        "scope": "vardefulla-datamangder:read vardefulla-datamangder:ping",
+    }
+
+
 def test_normalize_identitetsbeteckning_from_string() -> None:
     assert Client._normalize_identitetsbeteckning("5560000001") == {
         "identitetsbeteckning": "5560000001"
@@ -136,6 +151,55 @@ def test_client_uses_test_base_url() -> None:
     with httpx.Client() as session:
         client = Client(session, DummyTokenManager(test_environment=True))
         assert client._base_url == BASE_URL_TEST
+
+
+def test_client_from_credentials_issues_token_and_returns_client() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path == PATH_TOKEN:
+            body = request.read().decode()
+            assert request.method == "POST"
+            assert "client_id=test-client-id" in body
+            assert "client_secret=test-client-secret" in body
+            assert "scope=custom%3Ascope" in body
+            return httpx.Response(200, json=make_token_response())
+
+        if request.url.path == f"{BASE_PATH_API}/isalive":
+            assert request.headers["Authorization"] == "Bearer issued-token"
+            return httpx.Response(200, text="alive")
+
+        exc_msg = "unexpected request"
+        raise AssertionError(exc_msg)
+
+    transport = httpx.MockTransport(handler)
+
+    with httpx.Client(transport=transport) as session:
+        client = Client.from_credentials(
+            session,
+            CLIENT_CREDENTIALS,
+            scope="custom:scope",
+        )
+        body, status = client.ping()
+
+    assert body == "alive"
+    assert status == 200
+
+
+def test_client_from_credentials_can_skip_token_issue() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        exc_msg = f"unexpected request: {request.method} {request.url}"
+        raise AssertionError(exc_msg)
+
+    transport = httpx.MockTransport(handler)
+
+    with httpx.Client(transport=transport) as session:
+        client = Client.from_credentials(
+            session,
+            CLIENT_CREDENTIALS,
+            issue_token=False,
+        )
+
+        with pytest.raises(RuntimeError, match="No valid access token available"):
+            client.ping()
 
 
 def test_ping_returns_text_and_status_code() -> None:
@@ -332,6 +396,57 @@ async def test_async_ping_returns_text_and_status_code() -> None:
 
     assert body == "alive"
     assert status == 200
+
+
+@pytest.mark.asyncio
+async def test_async_client_from_credentials_issues_token_and_returns_client() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path == PATH_TOKEN:
+            body = request.read().decode()
+            assert request.method == "POST"
+            assert "client_id=test-client-id" in body
+            assert "client_secret=test-client-secret" in body
+            assert "scope=custom%3Ascope" in body
+            return httpx.Response(200, json=make_token_response())
+
+        if request.url.path == f"{BASE_PATH_API}/isalive":
+            assert request.headers["Authorization"] == "Bearer issued-token"
+            return httpx.Response(200, text="alive")
+
+        exc_msg = "unexpected request"
+        raise AssertionError(exc_msg)
+
+    transport = httpx.MockTransport(handler)
+
+    async with httpx.AsyncClient(transport=transport) as session:
+        client = await AsyncClient.from_credentials(
+            session,
+            CLIENT_CREDENTIALS,
+            scope="custom:scope",
+        )
+        body, status = await client.ping()
+
+    assert body == "alive"
+    assert status == 200
+
+
+@pytest.mark.asyncio
+async def test_async_client_from_credentials_can_skip_token_issue() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        exc_msg = f"unexpected request: {request.method} {request.url}"
+        raise AssertionError(exc_msg)
+
+    transport = httpx.MockTransport(handler)
+
+    async with httpx.AsyncClient(transport=transport) as session:
+        client = await AsyncClient.from_credentials(
+            session,
+            CLIENT_CREDENTIALS,
+            issue_token=False,
+        )
+
+        with pytest.raises(RuntimeError, match="No valid access token available"):
+            await client.ping()
 
 
 @pytest.mark.asyncio
