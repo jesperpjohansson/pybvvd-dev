@@ -1,13 +1,18 @@
 name: Set Up Python Environment
-description: Checkout code, set up Python, and (optionally) upgrade pip
+description: Set up Python and optionally upgrade pip.
 
 inputs:
   python-version:
-    description: Version of Python to install
-    default: '3.12'
+    description: Python version to install.
+    default: "3.12"
   upgrade-pip:
-    description: Whether or not to skip upgrading pip
-    default: 'true'
+    description: Whether to upgrade pip.
+    default: "true"
+  cache-dependency-path:
+    description: Requirement files used to key the pip cache.
+    default: |
+      pyproject.toml
+      requirements/*.txt
 
 runs:
   using: composite
@@ -17,6 +22,7 @@ runs:
       with:
         python-version: ${{ inputs.python-version }}
         cache: pip
+        cache-dependency-path: ${{ inputs.cache-dependency-path }}
 
     - name: Upgrade pip
       if: ${{ inputs.upgrade-pip == 'true' }}

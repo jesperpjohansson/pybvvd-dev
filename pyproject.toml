@@ -9,22 +9,48 @@ description = "SDK for Bolagsverket's Värdefulla Datamängder API."
 readme = "README.md"
 requires-python = ">=3.12,<3.14"
 license = "BSD-3-Clause"
-authors = [{ name="Jesper Johansson", email="jesperpjohansson@gmail.com" }]
-dependencies = ["httpx", "pydantic"]
+authors = [{ name = "Jesper Johansson", email = "jesperpjohansson@gmail.com" }]
+keywords = ["bolagsverket", "sdk", "httpx", "pydantic"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: BSD License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3 :: Only",
+  "Typing :: Typed",
+]
+dependencies = [
+  "httpx>=0.27,<1",
+  "pydantic>=2,<3",
+]
+
+[project.urls]
+Documentation = "https://pybvvd.readthedocs.io/"
+Repository = "https://github.com/jesperpjohansson/pybvvd-dev"
+Issues = "https://github.com/jesperpjohansson/pybvvd-dev/issues"
 
 [project.optional-dependencies]
 dev = [
-  "ruff",
   "mypy",
+  "mkdocs",
+  "mkdocs-material",
+  "mkdocstrings[python]",
   "pytest",
   "pytest-asyncio",
   "pytest-cov",
+  "ruff",
 ]
+test = ["pytest", "pytest-asyncio", "pytest-cov"]
 
 # ≡≡≡ hatch ≡≡≡
 
 [tool.hatch.version]
 source = "vcs"
+
+[tool.hatch.build.targets.wheel]
+packages = ["pybvvd"]
 
 # ≡≡≡ ruff ≡≡≡
 
@@ -35,7 +61,6 @@ include = [
   "pyproject.toml",
   "pybvvd/**/*.py",
   "tests/**/*.py",
-  "scripts/**/*.py",
   "patch_swagger.py"
 ]
 exclude = ["pybvvd/api/_generated.py"]
@@ -66,7 +91,7 @@ ignore = [
   "TRY002",  # raise-vanilla-class
 ]
 
-"scripts/*" = [
+"patch_swagger.py" = [
   "D101",    # undocumented-public-class
   "D102",    # undocumented-public-method
   "D103",    # undocumented-public-function
@@ -85,11 +110,14 @@ force-sort-within-sections = true
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
 
+[tool.ruff.format]
+docstring-code-format = true
+
 # ≡≡≡ mypy ≡≡≡
 
 [tool.mypy]
 python_version = "3.12"
-files = ["pybvvd/**/*.py", "scripts/**/*.py", "patch_swagger.py"]
+files = ["pybvvd/**/*.py", "patch_swagger.py"]
 warn_unused_configs = true
 disallow_subclassing_any = true
 disallow_untyped_calls = true
@@ -106,8 +134,15 @@ extra_checks = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+asyncio_mode = "strict"
   
+[tool.coverage.run]
+source = ["pybvvd"]
+branch = true
+
 [tool.coverage.report]
+show_missing = true
+skip_covered = true
 exclude_also = ["if TYPE_CHECKING:"]
 
 # ≡≡≡ datamodel-codegen ≡≡≡

@@ -1,13 +1,6 @@
-# Packages required to run `scripts/covreport.py`
-#
-# Notes:
-# - `# import: name` specifies the import name of a dependency. It is a directive
-#   comment used to verify that all dependencies have been installed.
-#   See `scripts/_utils.py`.
-# - This file excludes `pybvvd` because it is installed
-#   separately from multiple sources in CI (editable/.whl/.tar.gz).
+# Packages required to run tests with coverage.
+# This file excludes `pybvvd` because CI installs the package separately.
 
 -r test.txt
 
-# PLUGINS
-pytest-cov # import: pytest_cov
+pytest-cov

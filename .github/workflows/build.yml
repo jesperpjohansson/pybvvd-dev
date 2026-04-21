@@ -5,57 +5,70 @@ on:
     branches:
       - main
     paths:
-      - 'pyproject.toml'
-      - 'pybvvd/**'
-      - 'tests/**'
-      - '.github/workflows/build.yml'
-      - '.github/actions/set-up-python-env/action.yml'
+      - "pyproject.toml"
+      - "README.md"
+      - "LICENSE"
+      - "MANIFEST.in"
+      - "pybvvd/**"
+      - "tests/**"
+      - "requirements/covreport.txt"
+      - "requirements/test.txt"
+      - ".github/workflows/build.yml"
+      - ".github/actions/set-up-python-env/action.yml"
   workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-dist:
     name: Build and check distributions
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Set Up Python Environment
+      - name: Set up Python environment
         uses: ./.github/actions/set-up-python-env
-      
-      - name: Install build
-        run: |
-          python -m pip install build
+
+      - name: Install build dependencies
+        run: python -m pip install build twine
 
       - name: Build distributions
-        run: |
-          python -m build
-
-      - name: Install Twine
-        run: |
-          python -m pip install twine
+        run: python -m build
 
       - name: Check distributions
-        run: |
-          python -m twine check dist/*
-      
+        run: python -m twine check dist/*
+
       - name: Upload distributions artifact
         uses: actions/upload-artifact@v4
         with:
           name: distributions
           path: dist/
-      
-  test-cov-wheel:
+
+  test-wheel:
     name: Test wheel distribution with coverage
     needs: build-dist
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Set Up Python Environment
+      - name: Set up Python environment
         uses: ./.github/actions/set-up-python-env
-      
+        with:
+          cache-dependency-path: |
+            pyproject.toml
+            requirements/covreport.txt
+            requirements/test.txt
+
       - name: Download distributions artifact
         uses: actions/download-artifact@v4
         with:
@@ -67,21 +80,23 @@ jobs:
           python -m pip install dist/*.whl
           python -m pip install -r requirements/covreport.txt
 
-      - name: Run scripts.covreport
+      - name: Verify wheel import location
+        working-directory: /tmp
         run: |
-          python -m scripts.covreport xml
-      
-      - name: Debug current directory and files
+          python -c "import os, pathlib, pybvvd; path = pathlib.Path(pybvvd.__file__).resolve(); workspace = pathlib.Path(os.environ['GITHUB_WORKSPACE']).resolve(); print(path); assert not path.is_relative_to(workspace)"
+
+      - name: Run wheel tests
+        working-directory: /tmp
         run: |
-          pwd
-          ls -la
+          python -m pytest "$GITHUB_WORKSPACE/tests" \
+            --cov=pybvvd \
+            --cov-report=xml:"$GITHUB_WORKSPACE/coverage.xml"
 
       - name: Upload coverage report
-        id: upload
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: coverage.xml
-      
+
       - name: Upload coverage to Coveralls
         uses: coverallsapp/github-action@v2

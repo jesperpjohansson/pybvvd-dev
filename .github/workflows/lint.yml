@@ -5,29 +5,42 @@ on:
     branches:
       - main
     paths:
-      - 'pyproject.toml'
-      - 'pybvvd/**'
-      - 'tests/**'
-      - 'scripts/**'
-      - 'requirements/lint.txt'
-      - '.github/workflows/lint.yml'
-      - '.github/actions/set-up-python-env/action.yml'
+      - "pyproject.toml"
+      - "pybvvd/**"
+      - "tests/**"
+      - "patch_swagger.py"
+      - "requirements/lint.txt"
+      - ".github/workflows/lint.yml"
+      - ".github/actions/set-up-python-env/action.yml"
   workflow_dispatch:
   workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lint-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
-      
-      - name: Set Up Python Environment
+
+      - name: Set up Python environment
         uses: ./.github/actions/set-up-python-env
+        with:
+          cache-dependency-path: requirements/lint.txt
 
       - name: Install dependencies
         run: python -m pip install -r requirements/lint.txt
 
-      - name: Run scripts.lint
-        run: python -m scripts.lint
+      - name: Check formatting
+        run: python -m ruff format --diff
+
+      - name: Run Ruff
+        run: python -m ruff check

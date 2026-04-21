@@ -1,17 +1,8 @@
-# Packages required to run `scripts/test.py`
-#
-# Notes:
-# - `# import: name` specifies the import name of a dependency. It is a directive
-#   comment used to verify that all dependencies have been installed.
-#   See `scripts/_utils.py`.
-# - This file excludes `pybvvd` because it is installed
-#   separately from multiple sources in CI (editable/.whl/.tar.gz).
+# Packages required to run tests.
+# This file excludes `pybvvd` because CI installs the package separately.
 
-# TOOL
-pytest # import: pytest
+pytest
+pytest-asyncio
 
-# PLUGINS
-pytest-asyncio # import: pytest_asyncio
-
-# DEPENDENCIES (pybvvd)
-httpx   # import: httpx
+httpx
+pydantic
