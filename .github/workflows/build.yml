@@ -47,7 +47,7 @@ jobs:
         run: python -m twine check dist/*
 
       - name: Upload distributions artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: distributions
           path: dist/
@@ -93,7 +93,7 @@ jobs:
             --cov-report=xml:"$GITHUB_WORKSPACE/coverage.xml"
 
       - name: Upload coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-report
           path: coverage.xml
