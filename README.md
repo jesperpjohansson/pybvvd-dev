@@ -1,6 +1,6 @@
 # pybvvd
 ![PyPI](https://img.shields.io/badge/PyPI-not%20available-red.svg)
-![Python](https://img.shields.io/badge/Python-3.12%20%7C%203.13-blue.svg)
+![Python](https://img.shields.io/badge/Python-3.12%20%7C%203.13%20%7C%203.14-blue.svg)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://github.com/jesperpjohansson/pybvvd-dev/blob/main/LICENSE)
 [![CI](https://github.com/jesperpjohansson/pybvvd-dev/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jesperpjohansson/pybvvd-dev/actions/workflows/ci.yml?branch=main)
 [![Coverage](https://coveralls.io/repos/github/jesperpjohansson/pybvvd-dev/badge.svg?branch=main)](https://coveralls.io/github/jesperpjohansson/pybvvd-dev?branch=main)
