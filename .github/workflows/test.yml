@@ -1,16 +1,6 @@
 name: Test
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "pyproject.toml"
-      - "pybvvd/**"
-      - "tests/**"
-      - "requirements/test.txt"
-      - ".github/workflows/test.yml"
-      - ".github/actions/set-up-python-env/action.yml"
   workflow_dispatch:
   workflow_call:
 

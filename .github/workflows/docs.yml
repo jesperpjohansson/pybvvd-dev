@@ -1,19 +1,6 @@
 name: Docs
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "pyproject.toml"
-      - "README.md"
-      - "pybvvd/**"
-      - "docs/**"
-      - "mkdocs.yml"
-      - "readthedocs.yaml"
-      - "requirements/docs.txt"
-      - ".github/workflows/docs.yml"
-      - ".github/actions/set-up-python-env/action.yml"
   workflow_dispatch:
   workflow_call:
 

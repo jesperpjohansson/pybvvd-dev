@@ -1,16 +1,6 @@
 name: Typecheck
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "pyproject.toml"
-      - "pybvvd/**"
-      - "patch_swagger.py"
-      - "requirements/typecheck.txt"
-      - ".github/workflows/typecheck.yml"
-      - ".github/actions/set-up-python-env/action.yml"
   workflow_dispatch:
   workflow_call:
 

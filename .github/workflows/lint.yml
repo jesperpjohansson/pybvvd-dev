@@ -1,17 +1,6 @@
 name: Lint
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "pyproject.toml"
-      - "pybvvd/**"
-      - "tests/**"
-      - "patch_swagger.py"
-      - "requirements/lint.txt"
-      - ".github/workflows/lint.yml"
-      - ".github/actions/set-up-python-env/action.yml"
   workflow_dispatch:
   workflow_call:
 

@@ -1,20 +1,6 @@
 name: Build
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "pyproject.toml"
-      - "README.md"
-      - "LICENSE"
-      - "MANIFEST.in"
-      - "pybvvd/**"
-      - "tests/**"
-      - "requirements/covreport.txt"
-      - "requirements/test.txt"
-      - ".github/workflows/build.yml"
-      - ".github/actions/set-up-python-env/action.yml"
   workflow_dispatch:
   workflow_call:
 
@@ -99,4 +85,5 @@ jobs:
           path: coverage.xml
 
       - name: Upload coverage to Coveralls
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: coverallsapp/github-action@v2
