@@ -4,6 +4,7 @@
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://github.com/jesperpjohansson/pybvvd-dev/blob/main/LICENSE)
 [![CI](https://github.com/jesperpjohansson/pybvvd-dev/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jesperpjohansson/pybvvd-dev/actions/workflows/ci.yml?branch=main)
 [![Coverage](https://coveralls.io/repos/github/jesperpjohansson/pybvvd-dev/badge.svg?branch=main)](https://coveralls.io/github/jesperpjohansson/pybvvd-dev?branch=main)
+[![Documentation](https://readthedocs.org/projects/pybvvd/badge/?version=latest)](https://pybvvd.readthedocs.io/en/latest/)
 
 
 Python SDK for Bolagsverket's *Värdefulla Datamängder* API.
